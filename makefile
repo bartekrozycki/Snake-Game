@@ -24,7 +24,10 @@ $(OBJ)/winsys.o: $(SRC)/winsys.cpp $(SRC)/winsys.h $(SRC)/screen.h $(SRC)/cpoint
 $(OBJ)/snake.o: $(SRC)/snake.cpp $(SRC)/winsys.h $(SRC)/screen.h $(SRC)/cpoint.h $(SRC)/snake.h
 	g++ -g -c -Wall -pedantic -std=c++11 $< -o $@
 
-.PHONY: clean
+.PHONY: clean run
+
+run: clean winsys
+	./winsys
 
 clean:
-	-rm winsys $(OBJ)/*.o
+	-rm -rf winsys $(OBJ)/*.o

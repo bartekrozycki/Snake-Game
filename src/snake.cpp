@@ -1,155 +1,130 @@
 #include "snake.h"
 #include "ncurses.h"
 #include "screen.h"
+#include "time.h"
 
-#define PRE_ALLOC_SNAKE_LENGTH 5
-#define SECOND 1000/20
+//
+//
+// C E L L
+Cell::Cell(size_t _x = 0, size_t _y = 0): x(_x), y(_y), cellType(EMPTY) {}
+void Cell::setCellType(CellType _cellType) {
+    this->cellType = _cellType;
+}
+bool Cell::operator==(const Cell &cell) {
+    if (this->x == cell.x && this->y == cell.y)
+        return true;
+    return false;
+}
+CellType Cell::getCellType() {
+    return this->cellType;
+}
+size_t Cell::getX() {
+    return this->x;
+}
+size_t Cell::getY() {
+    return this->y;
+}
+void Cell::set(size_t x, size_t y) {
+    this->x = x;
+    this->y = y;
+}
 
-static size_t tick = 0;
+//
+//
+// B O A R D
+Board::Board(size_t window_x, size_t window_y): x(window_x), y(window_y) {
+    this->cells = new Cell*[window_x];
 
-Snake::Snake(CRect _border, CPoint spawnPoint, char char_head, char char_body)
+    for (size_t x = 0; x < window_x; ++x)
+        this->cells[x] = new Cell[window_y]; // TODO may cause mem leak => check later
+
+    for (size_t x = 0; x < window_x; ++x)
+        for (size_t y = 0; y < window_y; ++y)
+            this->cells[x][y].set(x,y);
+}
+Board::~Board() {
+    for (size_t x= 0; x < this->x; ++x)
+        delete this->cells[x];
+    delete this->cells;
+}
+Cell ** Board::getCells() {
+    return this->cells;
+}
+Cell & Board::getCell(size_t x, size_t y) {
+    return this->cells[x][y];
+}
+void Board::generateFood() {
+    // TODO generate food
+}
+
+//
+//
+// S N A K E
+//class Snake {
+//    vector<Cell> bodyParts;
+//    Cell head;
+//public:
+//    Snake(Cell &initPos);
+//    void grow();
+//    void move(Cell& nextCell);
+//    bool checkCrash(Cell& nextCell);
+//    vector<Cell>& getBodyParts();
+//};
+Snake::Snake(Cell &initPos)
 {
-    this->border = _border;
-    this->c_body = char_body;
-    this->c_head = char_head;
-    this->spawnPoint = spawnPoint;
+    head = initPos;
+    snakeParts.push_back();
+    head.setCellType(SNAKE_NODE);
+}
+vector<Cell> & Snake::getBodyParts() {
+    return this->snakeParts;
+}
+void Snake::grow() {
 
-    this->init();
 }
-void Snake::init() {
-    this->body.clear();
-    this->body.insert(body.begin(), spawnPoint);
-    this->body.resize(PRE_ALLOC_SNAKE_LENGTH);
-    this->dir = Direction::RIGHT;
+void Snake::move(Cell &nextCell) {
+    Cell tail = this->snakeParts.pop_back();
+    tail.setCellType(EMPTY);
+
+    head = nextCell;
+    head.setCellType(SNAKE_NODE);
+    this->snakeParts.insert(this->snakeParts.begin(), head);
 }
-void Snake::changeDirection(Direction dir) {
-    switch (this->last_dir)
+bool Snake::checkCrash(Cell &nextCell) {
+
+    for (auto &cell : this->snakeParts)
     {
-        case Direction::RIGHT:
-            if (dir == Direction::LEFT) return;
-            break;
-        case Direction::LEFT:
-            if (dir == Direction::RIGHT) return;
-            break;
-        case Direction::UP:
-            if (dir == Direction::DOWN) return;
-            break;
-        case Direction::DOWN:
-            if (dir == Direction::UP) return;
-            break;
+        if ( cell == nextCell )
+        {
+            return true;
+        }
     }
-    this->dir = dir;
-}
-void Snake::move() {
-    CPoint head = body.front();
-    size_t temp;
-    switch (this->dir) {
-        case Direction::RIGHT:
-            temp = head.x % (this->border.size.x - 2) + 1;
-            body.insert(body.begin(), CPoint(temp, head.y));
-            break;
-        case Direction::LEFT:
-            temp = head.x - 1 == 0 ? this->border.size.x - 2 : head.x - 1;
-            body.insert(body.begin(), CPoint(temp, head.y));
-            break;
-        case Direction::UP:
-            temp = head.y - 1 == 0 ? this->border.size.y - 2 : head.y - 1;
-            body.insert(body.begin(), CPoint(head.x, temp));
-            break;
-        case Direction::DOWN:
-            temp = head.y % (this->border.size.y - 2) + 1;
-            body.insert(body.begin(), CPoint(head.x, temp));
-            break;
-    }
-    this->last_dir = this->dir;
-    body.pop_back();
-}
-void Snake::paint() {
-    auto i = body.cbegin();
-    gotoyx(this->border.topleft.y + i -> y, this->border.topleft.x + i -> x);
-    printc(c_head);
 
-    for (++i; i != body.cend(); ++i) {
-        gotoyx(this->border.topleft.y + i -> y, this->border.topleft.x + i -> x);
-        printc(c_body);
-    }
+    return false;
 }
 
-//////////        ###
-////////         #
-////////         #
-//////////        ### SNAKE
-
-CSnake::CSnake(CRect r, char _c /*=' '*/) : CFramedWindow(r, _c), player(r)
+CSnake::CSnake(CRect r, char _c /*=' '*/) : CFramedWindow(r, _c)
 {
 
 }
 void CSnake::paint()
 {
     CFramedWindow::paint();
-    player.paint();
-    if (gameMode == GameMode::HELP_MODE)
-        this->paintHelp();
 
-    gotoyx(this->geom.topleft.y + 0, this->geom.topleft.x + 2);
-    printl("[ Score: %u ]---[ Level %u ]", player.score, player.level);
 }
-void CSnake::paintHelp() {
-    gotoyx(this->geom.topleft.y + 5, this->geom.topleft.x + 10);
-    printl("Press 'h' to toggle help information.");
-    gotoyx(this->geom.topleft.y + 6, this->geom.topleft.x + 10);
-    printl("Press 'p' to toggle pause/play mode.");
-    gotoyx(this->geom.topleft.y + 7, this->geom.topleft.x + 10);
-    printl("Press 'r' to restart game.");
-    gotoyx(this->geom.topleft.y + 9, this->geom.topleft.x + 12);
-    printl("Use arrows to move snake (in play mode) or");
-    gotoyx(this->geom.topleft.y + 10, this->geom.topleft.x + 10);
-    printl("move window (in pause mode)");
-}
+
 bool CSnake::handleEvent(int key)
 {
-    switch (key)
-    {
-        case 'p':
-            gameMode = (gameMode == GameMode::PLAY_MODE) ? GameMode::PAUSE_MODE : GameMode::PLAY_MODE;
-            return true;
-        case 'h':
-            gameMode = (gameMode == GameMode::PLAY_MODE) ? GameMode::HELP_MODE : GameMode::PLAY_MODE;
-            return true;
-        case 'r':
-            player.init();
-            return true;
-    };
 
-    if (gameMode != GameMode::PLAY_MODE)
-    {
-        paint();
-
-        if (CFramedWindow::handleEvent(key))
-            return true;
-
-        return false;
-    }
-
-    ++tick;
-    if (!(tick % (SECOND / 4)))
-    {
-        player.move();
-        paint();
-    }
     switch (key)
     {
         case KEY_UP:
-            player.changeDirection(Snake::Direction::UP);
             return true;
         case KEY_DOWN:
-            player.changeDirection(Snake::Direction::DOWN);
             return true;
         case KEY_RIGHT:
-            player.changeDirection(Snake::Direction::RIGHT);
             return true;
         case KEY_LEFT:
-            player.changeDirection(Snake::Direction::LEFT);
             return true;
     };
     return false;
