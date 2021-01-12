@@ -22,6 +22,7 @@ public:
 
 
     Snake(CRect _border, CPoint spawnPoint = CPoint(5,5), char char_head = '@', char char_body = '+');
+    void setBorder(CRect &rect);
     void init(void);
     void changeDirection(Direction dir);
     void paint();

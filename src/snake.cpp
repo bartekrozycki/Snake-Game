@@ -40,6 +40,9 @@ void Snake::changeDirection(Direction dir) {
     }
     this->dir = dir;
 }
+void Snake::setBorder(CRect &rect) {
+    this->border = rect;
+}
 void Snake::move() {
     CPoint head = body.front();
     size_t temp;
@@ -87,6 +90,7 @@ CSnake::CSnake(CRect r, char _c /*=' '*/) : CFramedWindow(r, _c), player(r)
 void CSnake::paint()
 {
     CFramedWindow::paint();
+    player.setBorder(this->geom);
     player.paint();
     if (gameMode == GameMode::HELP_MODE)
         this->paintHelp();
