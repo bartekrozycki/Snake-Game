@@ -43,7 +43,7 @@ void Snake::changeDirection(Direction dir) {
 void Snake::setBorder(CRect &rect) {
     this->border = rect;
 }
-void Snake::move() {
+bool Snake::move() {
     CPoint head = body.front();
     size_t temp;
     switch (this->dir) {
@@ -66,6 +66,11 @@ void Snake::move() {
     }
     this->last_dir = this->dir;
     body.pop_back();
+
+    return this->checkCrash(head);
+}
+bool Snake::checkCrash(CPoint &head) {
+    return true;
 }
 void Snake::paint() {
     auto i = body.cbegin();

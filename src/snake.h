@@ -26,7 +26,8 @@ public:
     void init(void);
     void changeDirection(Direction dir);
     void paint();
-    void move();
+    bool move();
+    bool checkCrash(CPoint &head);
 };
 class CSnake : public CFramedWindow
 {
@@ -34,6 +35,7 @@ class CSnake : public CFramedWindow
         PLAY_MODE,
         HELP_MODE,
         PAUSE_MODE,
+        GAME_OVER,
     } gameMode;
     Snake player;
     void paintHelp(void);
