@@ -10,8 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="69cbf7dd-a956-45fd-8b1e-ffb023b5131f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cpoint.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/cpoint.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/snake.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/snake.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/snake.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/snake.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/winsys.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/winsys.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/winsys.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/winsys.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +30,14 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1mezGiPfeRhRqZ5E1nWELwCEACA" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />

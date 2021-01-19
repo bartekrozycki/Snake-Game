@@ -1,21 +1,21 @@
 #ifndef __SNAKE_H__
 #define __SNAKE_H__
 
-#include <vector>
+#include <deque>
 #include <assert.h>
 #include <stdexcept>
 #include "winsys.h"
 #include "cpoint.h"
 
 class Snake {
-    vector<CPoint> body;
+    deque<CPoint> food;
+    deque<CPoint> body;
     CPoint spawnPoint;
     CRect border;
     char c_head;
     char c_body;
 public:
     size_t score;
-    size_t level;
     enum class Direction{
         RIGHT, LEFT, DOWN, UP
     } dir, last_dir;
@@ -26,8 +26,12 @@ public:
     void init(void);
     void changeDirection(Direction dir);
     void paint();
+    void spawnFood();
+    size_t getLevel();
     bool move();
-    bool checkCrash(CPoint &head);
+    bool checkCrash(const CPoint &head) const;
+    void ai();
+    CPoint nextCell(Direction d);
 };
 class CSnake : public CFramedWindow
 {
@@ -36,9 +40,11 @@ class CSnake : public CFramedWindow
         HELP_MODE,
         PAUSE_MODE,
         GAME_OVER,
+        AI_MODE
     } gameMode;
     Snake player;
     void paintHelp(void);
+    void paintGameOver(void);
 public:
     CSnake(CRect r, char _c = ' ');
     bool handleEvent(int key) override;

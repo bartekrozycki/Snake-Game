@@ -112,15 +112,8 @@ bool CInputLine::handleEvent(int c)
 
 void CGroup::paint()
 {
-    for(int y= geom.topleft.y; y < geom.topleft.y + geom.size.y; y++)
-    {
-        gotoyx(y, geom.topleft.x);
-        for(int x = 0; x < geom.size.x; x++)
-            printl (".");
-    }
-
-    for (list< CView * >::iterator i = children.begin(); i != children.end(); i++)
-        (*i)->paint();
+    for (auto &i : children)
+        i->paint();
 }
 
 bool CGroup::handleEvent(int key)

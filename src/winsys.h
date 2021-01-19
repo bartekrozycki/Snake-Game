@@ -18,7 +18,7 @@ public:
     virtual ~CView() = default;
 
     virtual void paint () = 0; // abstract
-    virtual bool handleEvent (int key) = 0;
+    virtual bool handleEvent (int key) = 0; // abstract
     virtual void move (const CPoint & delta);
 };
 
@@ -29,8 +29,8 @@ protected:
 public:
     CWindow(CRect r, char _c = '*') : CView(r), c(_c) {}
 
-    void paint() override;
-    bool handleEvent(int key) override;
+    void paint() override; // override abstract
+    bool handleEvent(int key) override; // override abstract
 };
 
 class CFramedWindow: public CWindow
