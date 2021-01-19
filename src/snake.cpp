@@ -19,7 +19,7 @@ Snake::Snake(CRect _border, CPoint spawnPoint, char char_head, char char_body)
     this->c_head = char_head;
     this->spawnPoint = spawnPoint;
 
-    srand( (unsigned)time(NULL) );
+    srand( (unsigned)time(nullptr) );
 
     this->init();
 }
@@ -34,7 +34,7 @@ void Snake::init() {
 }
 void Snake::spawnFood() {
     CPoint entity;
-    bool found = 0;
+    bool found = false;
     while (!found)
     {
         entity = CPoint(((rand()%(this->border.size.x - 2)) + 1), ((rand()%(this->border.size.y - 2)) + 1));
@@ -43,31 +43,31 @@ void Snake::spawnFood() {
         {
             if (!(entity == cell))
             {
-                found = 1;
+                found = true;
                 break;
             }
         }
 
     }
-    this->food.push_back(entity);
+    this->food.push_front(entity);
 }
-void Snake::changeDirection(Direction dir) {
+void Snake::changeDirection(Direction snake_dir) {
     switch (this->last_dir)
     {
         case Direction::RIGHT:
-            if (dir == Direction::LEFT) return;
+            if (snake_dir == Direction::LEFT) return;
             break;
         case Direction::LEFT:
-            if (dir == Direction::RIGHT) return;
+            if (snake_dir == Direction::RIGHT) return;
             break;
         case Direction::UP:
-            if (dir == Direction::DOWN) return;
+            if (snake_dir == Direction::DOWN) return;
             break;
         case Direction::DOWN:
-            if (dir == Direction::UP) return;
+            if (snake_dir == Direction::UP) return;
             break;
     }
-    this->dir = dir;
+    this->dir = snake_dir;
 }
 void Snake::setBorder(CRect &rect) {
     this->border = rect;
@@ -144,17 +144,16 @@ void Snake::paint() {
 
 }
 
-size_t Snake::getLevel() {
+size_t Snake::getLevel() const {
     return ( this->score / 5 );
 }
-
 void Snake::ai() {
 
-    CPoint &food = this->food.front();
+    CPoint &Food = this->food.front();
     CPoint &head = this->body.front();
 
     gotoyx(0,0);
-    printl("FOOD x %d y %d", food.x, food.y);
+    printl("FOOD x %d y %d", Food.x, Food.y);
     gotoyx(1,0);
     printl("HEAD x %d y %d", head.x, head.y);
 
@@ -163,19 +162,20 @@ void Snake::ai() {
     CPoint moveDown = nextCell(Direction::DOWN);
     CPoint moveLeft = nextCell(Direction::LEFT);
 
-    bool canUp = checkCrash(moveUp);
-    bool canRight = checkCrash(moveRight);
-    bool canDown = checkCrash(moveDown);
-    bool canLeft = checkCrash(moveLeft);
+    bool crashUp = checkCrash(moveUp);
+    bool crashRight = checkCrash(moveRight);
+    bool crashDown = checkCrash(moveDown);
+    bool crashLeft = checkCrash(moveLeft);
 
     gotoyx(2,0);
-    printl("[U R D L] => [%d %d %d %d]", canUp, canRight, canDown, canLeft);
+    printl("[U R D L] => [%d %d %d %d]", crashUp, crashRight, crashDown, crashLeft);
 
     set<pair<int,CPoint>> possible_moves;
-    possible_moves.insert(make_pair(this->food.begin()->dist(moveUp), moveUp));
-    possible_moves.insert(make_pair(this->food.begin()->dist(moveRight), moveRight));
-    possible_moves.insert(make_pair(this->food.begin()->dist(moveDown), moveDown));
-    possible_moves.insert(make_pair(this->food.begin()->dist(moveLeft), moveLeft));
+
+    possible_moves.insert(make_pair(Food.dist(moveUp), moveUp));
+    possible_moves.insert(make_pair(Food.dist(moveRight), moveRight));
+    possible_moves.insert(make_pair(Food.dist(moveDown), moveDown));
+    possible_moves.insert(make_pair(Food.dist(moveLeft), moveLeft));
 
 
     for (auto &i : possible_moves)
@@ -266,7 +266,7 @@ bool CSnake::handleEvent(int key)
         {
             if (player.move())
             {
-                this->gameMode = GameMode::GAME_OVER;
+                this->gameMode = GameMode::PAUSE_MODE;
             }
             paint();
         }
@@ -291,7 +291,7 @@ bool CSnake::handleEvent(int key)
 //        case 'f':
 //            player.spawnFood();
 //            return true;
-    };
+    }
 
     if (gameMode != GameMode::PLAY_MODE)
     {
@@ -326,6 +326,6 @@ bool CSnake::handleEvent(int key)
         case KEY_LEFT:
             player.changeDirection(Snake::Direction::LEFT);
             return true;
-    };
-    return false;
+        default: return false;
+    }
 }

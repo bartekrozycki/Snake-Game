@@ -2,7 +2,6 @@
 #define __SNAKE_H__
 
 #include <deque>
-#include <assert.h>
 #include <stdexcept>
 #include "winsys.h"
 #include "cpoint.h"
@@ -24,10 +23,10 @@ public:
     Snake(CRect _border, CPoint spawnPoint = CPoint(5,5), char char_head = '@', char char_body = '+');
     void setBorder(CRect &rect);
     void init(void);
-    void changeDirection(Direction dir);
+    void changeDirection(Direction snake_dir);
     void paint();
     void spawnFood();
-    size_t getLevel();
+    size_t getLevel() const;
     bool move();
     bool checkCrash(const CPoint &head) const;
     void ai();
