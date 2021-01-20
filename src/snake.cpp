@@ -37,17 +37,14 @@ void Snake::spawnFood() {
     bool found = false;
     while (!found)
     {
-        entity = CPoint(((rand()%(this->border.size.x - 2)) + 1), ((rand()%(this->border.size.y - 2)) + 1));
+        entity = CPoint( ( ( rand() % (this->border.size.x - 2) ) + 1), ( ( rand() % ( this->border.size.y - 2 ) ) + 1) );
 
-        for (auto& cell : this->body)
-        {
-            if (!(entity == cell))
-            {
-                found = true;
-                break;
-            }
-        }
+        auto it = find_if(this->body.begin() + 1, this->body.end(), [entity]
+        (const CPoint &ref) -> bool {
+            return ref == entity;
+        });
 
+        if (it == body.end()) found = true;
     }
     this->food.push_front(entity);
 }
@@ -103,14 +100,14 @@ bool Snake::move() {
     body.push_front(head);
 
     bool eat = false;
-    for (auto& cell : this->food)
+    for (auto& cell : food)
     {
-        if (head.x == cell.x && head.y == cell.y)
+        if (head == cell)
         {
             eat = true;
             score+=1;
-            this->food.pop_back();
-            this->spawnFood();
+            food.pop_back();
+            spawnFood();
         }
     }
     this->last_dir = this->dir;
@@ -122,20 +119,23 @@ bool Snake::checkCrash(const CPoint &head) const{
 
     auto it = find_if(this->body.begin() + 1, this->body.end(), [head]
     (const CPoint &ref) -> bool {
-        return ref.operator==(head);
+        return ref == head;
     });
 
     return it != this->body.end();
 }
 void Snake::paint() {
-    auto i = body.cbegin();
-    gotoyx(this->border.topleft.y + i -> y, this->border.topleft.x + i -> x);
-    printc(c_head);
 
-    for (++i; i != body.cend(); ++i) {
-        gotoyx(this->border.topleft.y + i -> y, this->border.topleft.x + i -> x);
-        printc(c_body);
+    for (auto &i : body)
+    {
+        gotoyx(this->border.topleft.y + i.y, this->border.topleft.x + i.x);
+
+        if (i == body.front())
+            printc(c_head);
+        else     
+            printc(c_body);
     }
+
     for (auto& cell : this->food)
     {
         gotoyx(this->border.topleft.y + cell.y, this->border.topleft.x + cell.x);
@@ -219,26 +219,6 @@ void CSnake::paint()
         this->paintHelp();
     if (gameMode == GameMode::GAME_OVER)
         this->paintGameOver();
-}
-void CSnake::paintHelp() {
-    gotoyx(this->geom.topleft.y + 5, this->geom.topleft.x + 10);
-    printl("Press 'h' to toggle help information.");
-    gotoyx(this->geom.topleft.y + 6, this->geom.topleft.x + 10);
-    printl("Press 'p' to toggle pause/play mode.");
-    gotoyx(this->geom.topleft.y + 7, this->geom.topleft.x + 10);
-    printl("Press 'r' to restart game.");
-    gotoyx(this->geom.topleft.y + 9, this->geom.topleft.x + 12);
-    printl("Use arrows to move snake (in play mode) or");
-    gotoyx(this->geom.topleft.y + 10, this->geom.topleft.x + 10);
-    printl("move window (in pause mode)");
-}
-void CSnake::paintGameOver() {
-    gotoyx(this->geom.topleft.y + 5, this->geom.topleft.x + 15);
-    printl("G A M E   O V E R");
-    gotoyx(this->geom.topleft.y + 6, this->geom.topleft.x + 15);
-    printl("Your score: %d", player.score);
-    gotoyx(this->geom.topleft.y + 7, this->geom.topleft.x + 15);
-    printl("Press 'r' to restart game.", player.score);
 }
 bool CSnake::handleEvent(int key)
 {
@@ -328,4 +308,25 @@ bool CSnake::handleEvent(int key)
             return true;
         default: return false;
     }
+}
+
+void CSnake::paintHelp() {
+    gotoyx(this->geom.topleft.y + 5, this->geom.topleft.x + 10);
+    printl("Press 'h' to toggle help information.");
+    gotoyx(this->geom.topleft.y + 6, this->geom.topleft.x + 10);
+    printl("Press 'p' to toggle pause/play mode.");
+    gotoyx(this->geom.topleft.y + 7, this->geom.topleft.x + 10);
+    printl("Press 'r' to restart game.");
+    gotoyx(this->geom.topleft.y + 9, this->geom.topleft.x + 12);
+    printl("Use arrows to move snake (in play mode) or");
+    gotoyx(this->geom.topleft.y + 10, this->geom.topleft.x + 10);
+    printl("move window (in pause mode)");
+}
+void CSnake::paintGameOver() {
+    gotoyx(this->geom.topleft.y + 5, this->geom.topleft.x + 15);
+    printl("G A M E   O V E R");
+    gotoyx(this->geom.topleft.y + 6, this->geom.topleft.x + 15);
+    printl("Your score: %d", player.score);
+    gotoyx(this->geom.topleft.y + 7, this->geom.topleft.x + 15);
+    printl("Press 'r' to restart game.", player.score);
 }

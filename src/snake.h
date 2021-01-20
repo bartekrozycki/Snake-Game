@@ -39,7 +39,8 @@ class CSnake : public CFramedWindow
         HELP_MODE,
         PAUSE_MODE,
         GAME_OVER,
-        AI_MODE
+        AI_MODE,
+
     } gameMode;
     Snake player;
     void paintHelp(void);

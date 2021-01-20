@@ -163,7 +163,7 @@ void CDesktop::paint()
     {
         gotoyx(y, geom.topleft.x);
         for (int x = 0; x < geom.size.x; x++)
-            printl (".");
+            printl ("_");
     }
 
     CGroup::paint();
